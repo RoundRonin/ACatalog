@@ -1,7 +1,10 @@
-﻿namespace ArticleCatalog.Infrastracture
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ArticleCatalog.Infrastracture;
+
+public class IIndexedModel
 {
-    public class IIndexedModel
-    {
-        public int Id {  get; set; }
-    }
+    [Required(ErrorMessage = "ID is required.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Id must be at least 1.")]
+    public int Id {  get; set; }
 }

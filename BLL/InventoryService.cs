@@ -9,16 +9,13 @@ public class InventoryService : IInventoryService
 {
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IStoreRepository _storeRepository;
-    private readonly IRepository<Product> _productRepository;
 
     public InventoryService(
         IInventoryRepository inventoryRepository,
-        IStoreRepository storeRepository,
-        IRepository<Product> productRepository)
+        IStoreRepository storeRepository)
     {
         _inventoryRepository = inventoryRepository;
         _storeRepository = storeRepository;
-        _productRepository = productRepository;
     }
 
     public async Task UpdateInventoryAsync(InventoryDTO inventoryDto)
@@ -65,7 +62,7 @@ public class InventoryService : IInventoryService
             if (item.Price > amount) continue;
 
             decimal maxProducts = amount / item.Price;
-            maxProducts = maxProducts > item.Quantity ? maxProducts : item.Quantity;
+            maxProducts = maxProducts > item.Quantity ? item.Quantity : maxProducts;
             item.Quantity = (int)maxProducts;
 
             affordebleProducts.Add(new StoreInventoryDTO

@@ -2,6 +2,7 @@
 using BLL.DTOs;
 using ArticleCatalog.ViewModels;
 using BLL.Infrastructure;
+using System.ComponentModel.DataAnnotations;
 
 namespace ArticleCatalog.Controllers
 {
@@ -37,11 +38,9 @@ namespace ArticleCatalog.Controllers
 
         // Get a store by ID
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetStoreById(int id)
+        public async Task<IActionResult> GetStoreById(
+            [RegularExpression("^[A-Za-z0-9-]+$", ErrorMessage = "Invalid ID format"), MaxLength(36)] string id)
         {
-            // Validation
-            if (id <= 0) { return BadRequest("Invalid store ID."); }
-
             var storeDto = await _storeService.GetStoreByIdAsync(id);
             if (storeDto == null)
             {

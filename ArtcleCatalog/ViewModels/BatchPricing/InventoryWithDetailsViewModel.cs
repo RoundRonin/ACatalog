@@ -2,7 +2,6 @@
 using ArticleCatalog.ViewModels.Abstractions;
 
 namespace ArticleCatalog.ViewModels.BatchPricing;
-
 public class InventoryWithDetailsViewModel : AbstractEnumerableValidatedViewModel<StoreInventoryViewModel>
 {
     [Required(ErrorMessage = "Store ID is required.")]

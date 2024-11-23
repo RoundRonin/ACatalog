@@ -26,7 +26,6 @@ namespace ArticleCatalog.Controllers
             // Translate presentation layer ViewModel to a BLL DTO
             var productDto = new ProductDTO
             {
-                Id = product.Id,
                 Name = product.Name
             };
 

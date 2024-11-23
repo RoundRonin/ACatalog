@@ -87,6 +87,11 @@ http://localhost:5000/swagger
 4. Swashbuckle.AspNetCore: Swagger for API documentation.
 5. DotNetEnv
 
+And some other packages for testing
+1. xUnit 
+2. dotnet add package Microsoft.EntityFrameworkCore.InMemory
+
+
 ## Development Environment
 c
 This project was developed using Visual Studio, git.

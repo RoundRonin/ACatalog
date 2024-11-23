@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.OpenApi.Models;
 using DotNetEnv;
+using ArticleCatalog.Middleware;
 
 namespace ArticleCatalog
 {
@@ -21,7 +22,7 @@ namespace ArticleCatalog
 
         public IConfiguration Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
 
