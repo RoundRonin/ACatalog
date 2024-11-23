@@ -57,19 +57,28 @@ namespace BLL.Services
         public async Task<IEnumerable<ProductDTO>> GetAffordableGoodsAsync(int storeId, decimal amount)
         {
             var inventory = await _inventoryRepository.GetAllAsync(i => i.StoreId == storeId && i.Price > 0);
-            var affordableGoods = inventory
-                .Where(i => i.Price * i.Quantity <= amount)
-                .Select(i => new ProductDTO
-                {
-                    Id = i.ProductId,
-                    Name = _productRepository.GetByIdAsync(i.ProductId).Result.Name,
-                    Price = i.Price,
-                    Quantity = i.Quantity
-                });
+            var products = inventory.Select(i => new ProductDTO
+            {
+                Id = i.ProductId,
+                Name = _productRepository.GetByIdAsync(i.ProductId).Result.Name,
+                Price = i.Price,
+                Quantity = i.Quantity
+            }).ToList();
 
+            var affordebleProducts = new List<ProductDTO>();
 
+            foreach (var product in products)
+            {
+                if (product.Price > amount) continue;
 
-            return affordableGoods;
+                int maxProducts = amount / product.Price;
+                maxProducts = maxProducts > product.Quantity ? maxProducts : product.Quantity;
+                product.Quantity = maxProducts;
+
+                affordebleProducts.Add(product);
+            }
+
+            return affordebleProducts;
         }
 
         public async Task<PurchaseResultDTO> BuyGoodsAsync(PurchaseRequestDTO purchaseRequest)

@@ -4,6 +4,8 @@ using BLL.DTOs;
 using ArticleCatalog.ViewModels;
 using ArticleCatalog.ViewModels.BatchQuantity;
 using ArticleCatalog.ViewModels.BatchPricing;
+using System.Collections.Generic; 
+using System.Linq;
 
 namespace ArticleCatalog.Controllers
 {
@@ -63,26 +65,26 @@ namespace ArticleCatalog.Controllers
 
             return Ok(storeViewModel);
         }
-
+        
         // 5. Understand which goods can be bought in the store for a certain amount
-        [HttpGet("affordable/{storeId}/{amount}")]
-        public async Task<IActionResult> GetAffordableGoods(int storeId, decimal amount)
+        [HttpGet("affordable/{storeId}/{amount}")] 
+        public async Task<IActionResult> GetAffordableGoods(int storeId, decimal amount) 
         {
             // Validation
-            if (storeId <= 0) { return BadRequest("Invalid store ID."); }
-            if (amount <= 0) { return BadRequest("Amount must be greater than 0."); }
-
+            if (storeId <= 0) { return BadRequest("Invalid store ID."); } 
+            if (amount <= 0) { return BadRequest("Amount must be greater than 0."); } 
+            
             var affordableGoods = await _inventoryService.GetAffordableGoodsAsync(storeId, amount);
-            var productViewModels = affordableGoods.Select(product => new ProductViewModel
+            var products = affordableGoods.Select(pair => new ProductViewModel
             {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price,
-                Quantity = product.Quantity
+                Id = pair.Id,
+                Name = pair.Name,
+                Price   = pair.Price,
+                Quantity = pair.Quantity
             });
 
-            return Ok(productViewModels);
-        }
+            return Ok(products);
+        } 
 
         // 6. Buy a batch of goods in the store
         [HttpPost("buy")]
