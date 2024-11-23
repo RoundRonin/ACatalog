@@ -67,10 +67,10 @@ namespace ArticleCatalog.Controllers
         
         // 5. Understand which goods can be bought in the store for a certain amount
         [HttpGet("affordable/{storeId}/{amount}")] 
-        public async Task<IActionResult> GetAffordableGoods(int storeId, decimal amount) 
+        public async Task<IActionResult> GetAffordableGoods(string storeId, decimal amount) 
         {
             // Validation
-            if (storeId <= 0) { return BadRequest("Invalid store ID."); } 
+            if (storeId == null) { return BadRequest("Invalid store ID."); } 
             if (amount <= 0) { return BadRequest("Amount must be greater than 0."); } 
             
             var affordableGoods = await _inventoryService.GetAffordableGoodsAsync(storeId, amount);

@@ -7,12 +7,12 @@ namespace BLL.Services
 {
     public class InventoryService : IInventoryService
     {
-        private readonly IRepository<Inventory> _inventoryRepository;
+        private readonly IInventoryRepository _inventoryRepository;
         private readonly IStoreRepository _storeRepository;
         private readonly IRepository<Product> _productRepository;
 
         public InventoryService(
-            IRepository<Inventory> inventoryRepository,
+            IInventoryRepository inventoryRepository,
             IStoreRepository storeRepository,
             IRepository<Product> productRepository)
         {
@@ -54,7 +54,7 @@ namespace BLL.Services
             };
         }
 
-        public async Task<IEnumerable<StoreInventoryDTO>> GetAffordableGoodsAsync(int storeId, decimal amount)
+        public async Task<IEnumerable<StoreInventoryDTO>> GetAffordableGoodsAsync(string storeId, decimal amount)
         {
             var storeInventory = await _inventoryRepository.GetAllProductsInAStore(i => i.StoreId == storeId && i.Price > 0);
 
@@ -64,11 +64,17 @@ namespace BLL.Services
             {
                 if (item.Price > amount) continue;
 
-                int maxProducts = amount / item.Price;
+                decimal maxProducts = amount / item.Price;
                 maxProducts = maxProducts > item.Quantity ? maxProducts : item.Quantity;
-                item.Quantity = maxProducts;
+                item.Quantity = (int)maxProducts;
 
-                affordebleProducts.Add(item);
+                affordebleProducts.Add(new StoreInventoryDTO
+                {
+                    ProductName = item.ProductName,
+                    ProductId = item.ProductId,
+                    Price = item.Price,
+                    Quantity = item.Quantity
+                });
             }
 
             return affordebleProducts;
