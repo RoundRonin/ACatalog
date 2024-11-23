@@ -25,7 +25,7 @@ PostgreSQL database (if using the database repository)
 Getting Started
 Clone the repository:
 ```sh
-git clone https://github.com/your-repo/ArticleCatalog.git
+git clone https://github.com/RoundRonin/ArtcleCatalog.git
 cd ArticleCatalog
 ```
 
