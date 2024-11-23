@@ -1,11 +1,11 @@
-﻿using ArticleCatalog.ViewModels.BatchQuantity;
+﻿using ArticleCatalog.ViewModels.Abstractions;
+using ArticleCatalog.ViewModels.BatchQuantity;
+using System.ComponentModel.DataAnnotations;
 
 namespace ArticleCatalog.ViewModels;
 
-public class BatchRequestViewModel
+public class BatchRequestViewModel : AbstractEnumerableValidatedViewModel<ProductQuantityViewModel> 
 {
-    public List<ProductQuantityViewModel> Products { get; set; }
-
     public BatchRequestViewModel()
     {
         Products = [];

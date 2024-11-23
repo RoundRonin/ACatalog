@@ -20,6 +20,8 @@ public class StoreController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateStore([FromBody] StoreViewModel store)
     {
+        // Validation
+        if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
         // Translate presentation layer ViewModel to a BLL DTO
         var storeDto = new StoreDTO 
@@ -37,6 +39,9 @@ public class StoreController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetStoreById(int id)
     {
+        // Validation
+        if (id <= 0) { return BadRequest("Invalid store ID."); }
+
         var store = await _storeService.GetStoreByIdAsync(id);
         return store != null ? (IActionResult)Ok(store) : NotFound();
     }

@@ -20,6 +20,9 @@ public class ProductController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] ProductViewModel product)
     {
+        // Validation
+        if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
         // Translate presentation layer ViewModel to a BLL DTO
         var productDto = new ProductDTO
         {
@@ -35,6 +38,9 @@ public class ProductController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(int id)
     {
+        // Validation
+        if (id <= 0) { return BadRequest("Invalid product ID."); }
+
         var product = await _productService.GetProductByIdAsync(id);
         return product != null ? (IActionResult)Ok(product) : NotFound();
     }
