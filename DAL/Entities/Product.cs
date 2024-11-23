@@ -2,11 +2,11 @@
 
 namespace DAL.Entities;
 
-public class Product : IEntity<Guid>
+public class Product : IEntity<int>
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public string Name { get; set; } = null!;
 
-    public ICollection<StoreProduct> Stores { get; set; } = new List<StoreProduct>();
+    public ICollection<Inventory> Stores { get; set; } = [];
 }
 

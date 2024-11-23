@@ -1,49 +1,63 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BLL;
 using BLL.DTOs;
 using ArticleCatalog.ViewModels;
+using BLL.Infrastructure;
 
-namespace ArticleCatalog.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class StoreController : ControllerBase
+namespace ArticleCatalog.Controllers
 {
-    private readonly IStoreService _storeService;
-
-    public StoreController(IStoreService storeService)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class StoreController : ControllerBase
     {
-        _storeService = storeService;
-    }
+        private readonly IStoreService _storeService;
 
-    // 1. Create a store
-    [HttpPost]
-    public async Task<IActionResult> CreateStore([FromBody] StoreViewModel store)
-    {
-        // Validation
-        if (!ModelState.IsValid) { return BadRequest(ModelState); }
+        public StoreController(IStoreService storeService)
+        {
+            _storeService = storeService;
+        }
 
-        // Translate presentation layer ViewModel to a BLL DTO
-        var storeDto = new StoreDTO 
-        { 
-            Code = store.Code,
-            Name = store.Name,
-            Address = store.Address 
-        };
+        // 1. Create a store
+        [HttpPost]
+        public async Task<IActionResult> CreateStore([FromBody] StoreViewModel store)
+        {
+            // Validation
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
-        await _storeService.CreateStoreAsync(storeDto);
-        return CreatedAtAction(nameof(GetStoreById), new { id = storeDto.Id }, storeDto);
-    }
+            // Translate presentation layer ViewModel to a BLL DTO
+            var storeDto = new StoreDTO
+            {
+                Code = store.Code,
+                Name = store.Name,
+                Address = store.Address
+            };
 
-    // Get a store by ID 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetStoreById(int id)
-    {
-        // Validation
-        if (id <= 0) { return BadRequest("Invalid store ID."); }
+            await _storeService.CreateStoreAsync(storeDto);
+            return CreatedAtAction(nameof(GetStoreById), new { id = storeDto.Id }, storeDto);
+        }
 
-        var store = await _storeService.GetStoreByIdAsync(id);
-        return store != null ? (IActionResult)Ok(store) : NotFound();
+        // Get a store by ID
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetStoreById(int id)
+        {
+            // Validation
+            if (id <= 0) { return BadRequest("Invalid store ID."); }
+
+            var storeDto = await _storeService.GetStoreByIdAsync(id);
+            if (storeDto == null)
+            {
+                return NotFound($"Store with ID {id} not found.");
+            }
+
+            // Translate BLL DTO to presentation layer ViewModel
+            var storeViewModel = new StoreViewModel
+            {
+                Id = storeDto.Id,
+                Code = storeDto.Code,
+                Name = storeDto.Name,
+                Address = storeDto.Address
+            };
+
+            return Ok(storeViewModel);
+        }
     }
 }
-

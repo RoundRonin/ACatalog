@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BLL;
+using BLL.Infrastructure;
 using BLL.DTOs;
 using ArticleCatalog.ViewModels;
 using ArticleCatalog.ViewModels.BatchQuantity;
@@ -47,8 +47,21 @@ namespace ArticleCatalog.Controllers
             // Validation
             if (productId <= 0) { return BadRequest("Invalid product ID."); }
 
-            var store = await _inventoryService.FindCheapestStoreAsync(productId);
-            return store != null ? (IActionResult)Ok(store) : NotFound();
+            var storeDto = await _inventoryService.FindCheapestStoreAsync(productId);
+            if (storeDto == null)
+            {
+                return NotFound($"Store with the cheapest product ID {productId} not found.");
+            }
+
+            var storeViewModel = new StoreViewModel
+            {
+                Id = storeDto.Id,
+                Code = storeDto.Code,
+                Name = storeDto.Name,
+                Address = storeDto.Address
+            };
+
+            return Ok(storeViewModel);
         }
 
         // 5. Understand which goods can be bought in the store for a certain amount
@@ -57,11 +70,18 @@ namespace ArticleCatalog.Controllers
         {
             // Validation
             if (storeId <= 0) { return BadRequest("Invalid store ID."); }
-
             if (amount <= 0) { return BadRequest("Amount must be greater than 0."); }
 
-            var goods = await _inventoryService.GetAffordableGoodsAsync(storeId, amount);
-            return Ok(goods);
+            var affordableGoods = await _inventoryService.GetAffordableGoodsAsync(storeId, amount);
+            var productViewModels = affordableGoods.Select(product => new ProductViewModel
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Quantity = product.Quantity
+            });
+
+            return Ok(productViewModels);
         }
 
         // 6. Buy a batch of goods in the store
@@ -82,7 +102,7 @@ namespace ArticleCatalog.Controllers
             };
 
             var result = await _inventoryService.BuyGoodsAsync(purchaseRequestDto);
-            return result.IsSuccess ? (IActionResult)Ok(result.TotalCost) : BadRequest("Not enough goods available");
+            return result.IsSuccess ? (IActionResult)Ok(result.TotalCost) : BadRequest($"Not enough goods available. Message: {result.Message}");
         }
 
         // 7. Find in which store the batch of goods has the smallest amount
@@ -101,8 +121,21 @@ namespace ArticleCatalog.Controllers
                 }).ToList()
             };
 
-            var store = await _inventoryService.FindCheapestBatchStoreAsync(batchRequestDto);
-            return store != null ? (IActionResult)Ok(store) : NotFound();
+            var storeDto = await _inventoryService.FindCheapestBatchStoreAsync(batchRequestDto);
+            if (storeDto == null)
+            {
+                return NotFound("No store found for the cheapest batch of goods.");
+            }
+
+            var storeViewModel = new StoreViewModel
+            {
+                Id = storeDto.Id,
+                Code = storeDto.Code,
+                Name = storeDto.Name,
+                Address = storeDto.Address
+            };
+
+            return Ok(storeViewModel);
         }
     }
 }

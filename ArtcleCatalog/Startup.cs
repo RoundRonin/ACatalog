@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using BLL;
 using DAL.Entities;
 using DAL.Infrastructure;
+using BLL.Infrastructure;
 
 namespace ArticleCatalog;
 

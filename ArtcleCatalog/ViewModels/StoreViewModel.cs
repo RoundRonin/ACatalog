@@ -6,8 +6,6 @@ namespace ArticleCatalog.ViewModels;
 
 public class StoreViewModel : IIndexedModel 
 {
-    public int Id { get; set; }
-
     [Required(ErrorMessage = "Code is required.")] 
     [MaxLength(10, ErrorMessage = "Code cannot exceed 10 characters.")]
     public required string Code { get; set; }

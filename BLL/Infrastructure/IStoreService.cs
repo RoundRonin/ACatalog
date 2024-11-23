@@ -1,6 +1,6 @@
 ﻿using BLL.DTOs;
 
-namespace BLL;
+namespace BLL.Infrastructure;
 
 public interface IStoreService
 {
