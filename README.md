@@ -1,6 +1,6 @@
-# ArticleCatalog
+# ACatalog 
 ## Overview
-ArticleCatalog is an API designed to manage stores, products and stores' inventories. Developed using ASP.NETCore and Entity Framework. Layered architecture pattern is used, separation of concerns is provided which leads to maintainability, and scalability.
+ACatalog is an API designed to manage stores, products and stores' inventories. Developed using ASP.NETCore and Entity Framework. Layered architecture pattern is used, separation of concerns is provided which leads to maintainability, and scalability.
 
 ## Project Structure
 The project is organized into several layers:

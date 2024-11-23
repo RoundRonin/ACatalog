@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ArticleCatalog.ViewModels.Abstractions;
+using ACatalog.ViewModels.Abstractions;
 
-namespace ArticleCatalog.ViewModels.BatchPricing;
+namespace ACatalog.ViewModels.BatchPricing;
 public class InventoryWithDetailsViewModel : AbstractEnumerableValidatedViewModel<StoreInventoryViewModel>
 {
     [Required(ErrorMessage = "Store Code is required.")]

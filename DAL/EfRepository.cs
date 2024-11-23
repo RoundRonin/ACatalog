@@ -12,7 +12,7 @@ public class EfRepository<T>(DbContext context) : IRepository<T> where T : class
 {
     protected readonly DbContext _context = context;
 
-    public async Task AddAsync(T entity)
+    private async Task AddAsync(T entity)
     {
         await _context.Set<T>().AddAsync(entity);
         await _context.SaveChangesAsync();

@@ -31,7 +31,7 @@ public class StoreService : IStoreService
 
         try
         {
-            await _storeRepository.AddAsync(store);
+            await _storeRepository.AddOrUpdateAsync(store);
         }
         // this line is to identify duplicate key exceptions (23505)
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23505") 

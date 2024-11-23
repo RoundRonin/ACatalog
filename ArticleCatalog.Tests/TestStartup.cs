@@ -6,6 +6,7 @@ using DAL.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
+namespace ACatalog.Tests;
 public class TestStartup
 {
     public IConfiguration Configuration { get; }

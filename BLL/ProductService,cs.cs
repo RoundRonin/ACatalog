@@ -26,10 +26,10 @@ public class ProductService : IProductService
 
         try
         {
-            await _productRepository.AddAsync(product);
+            await _productRepository.AddOrUpdateAsync(product);
         }
         // this line is to identify duplicate key exceptions (23505)
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException pgEx && pgEx.SqlState == "23505") 
+        catch (DbUpdateException ex)
         {
             throw new InvalidOperationException("A product with the same key already exists.", ex);
         }

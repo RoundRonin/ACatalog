@@ -1,33 +1,13 @@
 ﻿using DAL.Entities;
 using DAL.Infrastructure;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace DAL;
 
-public class FileProductRepository : IProductRepository
+public class FileProductRepository(string productFilePath) : IProductRepository
 {
-    private readonly string _productFilePath;
-
-    public FileProductRepository(string productFilePath)
-    {
-        _productFilePath = productFilePath;
-    }
-
-    public async Task AddAsync(Product entity)
-    {
-        var products = await GetAllProducts();
-        if (products.Any(p => p.Id == entity.Id))
-        {
-            // Skip adding as the product already exists globally
-            return;
-        }
-
-        await File.AppendAllLinesAsync(_productFilePath, new[] { $"{entity.Id}" });
-    }
+    private readonly string _productFilePath = productFilePath;
 
     public async Task AddOrUpdateAsync(Product entity)
     {
@@ -35,6 +15,10 @@ public class FileProductRepository : IProductRepository
         if (!await ProductExistsAsync(entity.Id))
         {
             await AddAsync(entity);
+        }
+        else
+        {
+            throw new DbUpdateException("Product already exists");
         }
     }
 
@@ -44,7 +28,7 @@ public class FileProductRepository : IProductRepository
         await AddOrUpdateAsync(entity);
     }
 
-    public async Task<Product> GetByIdAsync(int id)
+    public async Task<Product?> GetByIdAsync(int id)
     {
         var products = await GetAllProducts();
 
@@ -64,7 +48,7 @@ public class FileProductRepository : IProductRepository
 
         if (predicate != null)
         {
-            return products.AsQueryable().Where(predicate).ToList();
+            return [.. products.AsQueryable().Where(predicate)];
         }
 
         return products;
@@ -78,8 +62,27 @@ public class FileProductRepository : IProductRepository
 
     private async Task<IEnumerable<Product>> GetAllProducts()
     {
-        var lines = await File.ReadAllLinesAsync(_productFilePath);
-        return lines.Select(line => new Product { Id = line }).ToList();
+        var lines = await FileHelper.ReadLinesAsync(_productFilePath);
+        var products = lines.Select(line =>
+        {
+            var parts = line.Split(',');
+            return new Product
+            {
+                Id = parts[0]
+            };
+        });
+        return products;
     }
 
+    private async Task AddAsync(Product entity)
+    {
+        var products = await GetAllProducts();
+        if (products.Any(p => p.Id == entity.Id))
+        {
+            // Skip adding as the product already exists globally
+            return;
+        }
+
+        await FileHelper.WriteLinesAsync(_productFilePath, [$"{entity.Id}"]);
+    }
 }

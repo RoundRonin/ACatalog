@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BLL.DTOs;
-using ArticleCatalog.ViewModels;
+using ACatalog.ViewModels;
 using BLL.Infrastructure;
 using System.ComponentModel.DataAnnotations;
 
-namespace ArticleCatalog.Controllers
+namespace ACatalog.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

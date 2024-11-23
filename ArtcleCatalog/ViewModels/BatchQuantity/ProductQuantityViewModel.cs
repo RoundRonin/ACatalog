@@ -1,8 +1,8 @@
-﻿using ArticleCatalog.Infrastracture;
+﻿using ACatalog.Infrastracture;
 using System.ComponentModel.DataAnnotations;
 
 
-namespace ArticleCatalog.ViewModels.BatchQuantity;
+namespace ACatalog.ViewModels.BatchQuantity;
 
 public class ProductQuantityViewModel
 {

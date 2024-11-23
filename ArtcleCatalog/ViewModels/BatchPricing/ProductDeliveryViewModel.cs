@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ArticleCatalog.ViewModels.BatchPricing;
+namespace ACatalog.ViewModels.BatchPricing;
 
 public class ProductDeliveryViewModel
 {

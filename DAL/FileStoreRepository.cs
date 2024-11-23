@@ -1,35 +1,26 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using DAL.Entities;
+﻿using DAL.Entities;
 using DAL.Infrastructure;
 
 namespace DAL;
 
-public class FileStoreRepository(string filePath) : IRepository<Store>
+public class FileStoreRepository(string filePath) : IStoreRepository
 {
     private readonly string _filePath = filePath;
 
-    public async Task AddAsync(Store entity)
-    {
-        var lines = new List<string> { $"{entity.Id},{entity.Name}" };
-        await FileHelper.WriteLinesAsync(_filePath, lines, append: true);
-    }
-
     public async Task AddOrUpdateAsync(Store entity)
     {
-        var stores = await GetAllAsync();
-        var storeList = stores.ToList();
+        var stores = (await GetAllAsync()).ToList();
+        var index = stores.FindIndex(line => line.Id == entity.Id);
 
-        var store = storeList.FirstOrDefault(s => s.Id == entity.Id);
-        if (store != null)
+        if (index >= 0)
         {
-            storeList.Remove(store);
+            stores[index] = entity;
+        } else
+        {
+            stores.Add(entity);
         }
-        storeList.Add(entity);
 
-        var lines = storeList.Select(s => $"{s.Id},{s.Name}");
+        var lines = stores.Select(s => $"{s.Id},{s.Name},{s.Address}");
         await FileHelper.WriteLinesAsync(_filePath, lines, append: false);
     }
 
@@ -38,7 +29,7 @@ public class FileStoreRepository(string filePath) : IRepository<Store>
         await AddOrUpdateAsync(entity);
     }
 
-    public async Task<Store> GetByIdAsync(int id)
+    public async Task<Store?> GetByIdAsync(int id)
     {
         var stores = await GetAllAsync();
         return stores.FirstOrDefault(s => s.Id == id.ToString());
@@ -53,7 +44,8 @@ public class FileStoreRepository(string filePath) : IRepository<Store>
             return new Store
             {
                 Id = parts[0],
-                Name = parts[1]
+                Name = parts[1],
+                Address = parts[2]
             };
         });
 

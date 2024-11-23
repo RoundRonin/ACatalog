@@ -1,8 +1,8 @@
-﻿using ArticleCatalog.Infrastracture;
-using ArticleCatalog.ViewModels.Abstractions;
+﻿using ACatalog.Infrastracture;
+using ACatalog.ViewModels.Abstractions;
 using System.ComponentModel.DataAnnotations;
 
-namespace ArticleCatalog.ViewModels.BatchQuantity;
+namespace ACatalog.ViewModels.BatchQuantity;
 
 public class PurchaseRequestViewModel : AbstractEnumerableValidatedViewModel<ProductQuantityViewModel>
 {

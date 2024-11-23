@@ -3,8 +3,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
-using ArticleCatalog;
+using ACatalog;
 using Microsoft.AspNetCore.Hosting;
+
+namespace ACatalog.Tests;
 
 public class StoreControllerTests : IClassFixture<WebApplicationFactory<TestStartup>>
 {

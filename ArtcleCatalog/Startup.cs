@@ -9,75 +9,93 @@ using Microsoft.EntityFrameworkCore.Design;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.OpenApi.Models;
 using DotNetEnv;
-using ArticleCatalog.Middleware;
+using ACatalog.Middleware;
 
-namespace ArticleCatalog
+namespace ACatalog
 {
-    public class Startup
+    public class Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public IConfiguration Configuration { get; } = configuration;
 
-        public IConfiguration Configuration { get; }
-
-        public virtual void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
 
-            // Read repository type from configuration
-            var repositoryType = Configuration.GetValue<string>("RepositoryType");
+            string repositoryType = Configuration.GetValue<string>("RepositoryType");
 
             if (repositoryType == "Database")
             {
-                // Get .env from the root of the project
-                var rootEnvPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, ".env");
-                Env.Load(rootEnvPath);
-                // Construct the connection string from environment variables
-                var connectionString = $"Host={Environment.GetEnvironmentVariable("HOST")};" +
-                    $"Port={Environment.GetEnvironmentVariable("PORT")};" +
-                    $"Database={Environment.GetEnvironmentVariable("POSTGRES_DB")};" +
-                    $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER")};" +
-                    $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD")}";
-
-                // Configure EF Core and PostgreSQL
-                services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseNpgsql(connectionString));
-
-                // Configure database repositories
-                services.AddScoped<DbContext, ApplicationDbContext>();
-                services.AddScoped<IRepository<Store>, StoreRepository>();
-                services.AddScoped<IRepository<Product>, ProductRepository>();
-
-                services.AddScoped<IStoreRepository, StoreRepository>();
-                services.AddScoped<IProductRepository, ProductRepository>();
-                services.AddScoped<IInventoryRepository, InventoryRepository>();
-
-                // Configure services
+                ConfigureDatabaseServices(services);
             }
             else if (repositoryType == "File")
             {
-                var storeFilePath = Configuration.GetValue<string>("StoreFilePath");
-                var productFilePath = Configuration.GetValue<string>("ProductFilePath");
-
-                if (storeFilePath == null || productFilePath == null) throw new Exception("Configuration file is not set");
-
-                // Configure file-based repositories
-                var fileProdRep = new FileProductRepository(productFilePath);
-                services.AddScoped<IRepository<Store>>(sp => new FileStoreRepository(storeFilePath));
-                services.AddScoped<IRepository<Product>>(sp => fileProdRep);
-                services.AddScoped<IInventoryRepository>(sp => new FileInventoryRepository(productFilePath, fileProdRep));
+                ConfigureFileServices(services);
             }
             else
             {
                 throw new InvalidOperationException("Invalid repository type configured. Please choose either 'Database' or 'File'.");
             }
-            
+
+            ConfigureCommonServices(services);
+        }
+
+        private void ConfigureDatabaseServices(IServiceCollection services)
+        {
+            // Get .env from the root of the project
+            var rootEnvPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, ".env");
+            Env.Load(rootEnvPath);
+            // Construct the connection string from environment variables
+            var connectionString = $"Host={Environment.GetEnvironmentVariable("HOST")};" +
+                                   $"Port={Environment.GetEnvironmentVariable("PORT")};" +
+                                   $"Database={Environment.GetEnvironmentVariable("POSTGRES_DB")};" +
+                                   $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER")};" +
+                                   $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD")}";
+
+            // Configure EF Core and PostgreSQL
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseNpgsql(connectionString));
+
+            services.AddScoped<DbContext, ApplicationDbContext>();
+
+            // Configure database repositories
+            services.AddScoped<IRepository<Store>, StoreRepository>();
+            services.AddScoped<IRepository<Product>, ProductRepository>();
+            services.AddScoped<IRepository<Inventory>, InventoryRepository>();
+
+            services.AddScoped<IStoreRepository, StoreRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IInventoryRepository, InventoryRepository>();
+        }
+
+        private void ConfigureFileServices(IServiceCollection services)
+        {
+            var storeFilePath = Configuration.GetValue<string>("StoreFilePath");
+            var productFilePath = Configuration.GetValue<string>("ProductFilePath");
+
+            if (storeFilePath == null || productFilePath == null)
+            {
+                throw new Exception("Configuration file is not set");
+            }
+
+            // Configure file-based repositories
+            var fileStoreRepository = new FileStoreRepository(storeFilePath);
+            var fileProductRepository = new FileProductRepository(productFilePath);
+            var fileInventoryRepository = new FileInventoryRepository(productFilePath, fileProductRepository);
+
+            services.AddScoped<IRepository<Store>>(sp => fileStoreRepository);
+            services.AddScoped<IRepository<Product>>(sp => fileProductRepository);
+            services.AddScoped<IRepository<Inventory>>(sp => fileInventoryRepository);
+
+            services.AddScoped<IStoreRepository>(sp => fileStoreRepository);
+            services.AddScoped<IProductRepository>(sp => fileProductRepository);
+            services.AddScoped<IInventoryRepository>(sp => fileInventoryRepository);
+        }
+
+        private void ConfigureCommonServices(IServiceCollection services)
+        {
             services.AddScoped<IStoreService, StoreService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IInventoryService, InventoryService>();
-
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" }); });
         }

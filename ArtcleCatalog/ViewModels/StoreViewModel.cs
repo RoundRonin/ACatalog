@@ -1,8 +1,8 @@
-﻿using ArticleCatalog.Infrastracture;
+﻿using ACatalog.Infrastracture;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ArticleCatalog.ViewModels;
+namespace ACatalog.ViewModels;
 
 public class StoreViewModel 
 {

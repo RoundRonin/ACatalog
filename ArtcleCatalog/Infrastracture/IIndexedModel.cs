@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ArticleCatalog.Infrastracture;
+namespace ACatalog.Infrastracture;
 
 public class IIndexedModel
 {

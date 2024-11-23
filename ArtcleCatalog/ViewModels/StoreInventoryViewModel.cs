@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ArticleCatalog.ViewModels;
+namespace ACatalog.ViewModels;
 
 public class StoreInventoryViewModel
 {

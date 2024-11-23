@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ArticleCatalog.ViewModels.Abstractions;
+namespace ACatalog.ViewModels.Abstractions;
 
 public abstract class AbstractEnumerableValidatedViewModel<T> : IValidatableObject
 {

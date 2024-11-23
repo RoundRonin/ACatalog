@@ -1,4 +1,4 @@
-namespace ArticleCatalog;
+namespace ACatalog;
 
 public class Program
 {
