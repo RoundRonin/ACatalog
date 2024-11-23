@@ -54,28 +54,21 @@ namespace BLL.Services
             };
         }
 
-        public async Task<IEnumerable<ProductDTO>> GetAffordableGoodsAsync(int storeId, decimal amount)
+        public async Task<IEnumerable<StoreInventoryDTO>> GetAffordableGoodsAsync(int storeId, decimal amount)
         {
-            var inventory = await _inventoryRepository.GetAllAsync(i => i.StoreId == storeId && i.Price > 0);
-            var products = inventory.Select(i => new ProductDTO
+            var storeInventory = await _inventoryRepository.GetAllProductsInAStore(i => i.StoreId == storeId && i.Price > 0);
+
+            var affordebleProducts = new List<StoreInventoryDTO>();
+
+            foreach (var item in storeInventory)
             {
-                Id = i.ProductId,
-                Name = _productRepository.GetByIdAsync(i.ProductId).Result.Name,
-                Price = i.Price,
-                Quantity = i.Quantity
-            }).ToList();
+                if (item.Price > amount) continue;
 
-            var affordebleProducts = new List<ProductDTO>();
+                int maxProducts = amount / item.Price;
+                maxProducts = maxProducts > item.Quantity ? maxProducts : item.Quantity;
+                item.Quantity = maxProducts;
 
-            foreach (var product in products)
-            {
-                if (product.Price > amount) continue;
-
-                int maxProducts = amount / product.Price;
-                maxProducts = maxProducts > product.Quantity ? maxProducts : product.Quantity;
-                product.Quantity = maxProducts;
-
-                affordebleProducts.Add(product);
+                affordebleProducts.Add(item);
             }
 
             return affordebleProducts;

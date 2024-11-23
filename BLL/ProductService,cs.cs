@@ -40,18 +40,4 @@ public class ProductService : IProductService
             Name = product.Name
         };
     }
-
-    public Task<IEnumerable<ProductDTO>> GetAllProductsAsync()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateProductAsync(ProductDTO productDto)
-    {
-        throw new NotImplementedException();
-    }
-    public Task DeleteProductAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
 }

@@ -11,10 +11,4 @@ public class ProductViewModel : IIndexedModel
     [Required(ErrorMessage = "Name is required.")]
     [MaxLength(50, ErrorMessage = "Name cannot exceed 50 characters.")]
     public required string Name { get; set; }
-
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
-    public int Price { get; internal set; }
-
-    [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1.")]
-    public int Quantity { get; internal set; }
 }

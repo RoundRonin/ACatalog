@@ -46,18 +46,4 @@ public class StoreService : IStoreService
             Address = store.Address
         };
     }
-    public Task<IEnumerable<StoreDTO>> GetAllStoresAsync()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteStoreAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateStoreAsync(StoreDTO storeDto)
-    {
-        throw new NotImplementedException();
-    }
 }

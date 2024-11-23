@@ -75,12 +75,12 @@ namespace ArticleCatalog.Controllers
             if (amount <= 0) { return BadRequest("Amount must be greater than 0."); } 
             
             var affordableGoods = await _inventoryService.GetAffordableGoodsAsync(storeId, amount);
-            var products = affordableGoods.Select(pair => new ProductViewModel
+            var products = affordableGoods.Select(item => new StoreInventoryViewModel 
             {
-                Id = pair.Id,
-                Name = pair.Name,
-                Price   = pair.Price,
-                Quantity = pair.Quantity
+                ProductId = item.ProductId,
+                ProductName = item.ProductName,
+                Price = item.Price,
+                Quantity = item.Quantity
             });
 
             return Ok(products);
