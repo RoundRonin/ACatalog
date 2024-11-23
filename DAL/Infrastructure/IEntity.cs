@@ -1,5 +1,5 @@
 ﻿namespace DAL.Infrastructure;
 public interface IEntity<T>
 {
-    T Id { get; }
+    T Id { get; set;  }
 }

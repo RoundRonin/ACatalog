@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.OpenApi.Models;
+using DotNetEnv;
 
 namespace ArticleCatalog
 {
@@ -29,20 +30,27 @@ namespace ArticleCatalog
 
             if (repositoryType == "Database")
             {
-                // Validate database connection string
-                var connectionString = Configuration.GetConnectionString("DefaultConnection");
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    throw new InvalidOperationException("Database connection string is not provided or is invalid.");
-                }
+                // Get .env from the root of the project
+                var rootEnvPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, ".env");
+                Env.Load(rootEnvPath);
+                // Construct the connection string from environment variables
+                var connectionString = $"Host={Environment.GetEnvironmentVariable("HOST")};" +
+                    $"Port={Environment.GetEnvironmentVariable("PORT")};" +
+                    $"Database={Environment.GetEnvironmentVariable("POSTGRES_DB")};" +
+                    $"Username={Environment.GetEnvironmentVariable("POSTGRES_USER")};" +
+                    $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD")}";
 
                 // Configure EF Core and PostgreSQL
                 services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseNpgsql(connectionString));
 
                 // Configure database repositories
+                services.AddScoped<DbContext, ApplicationDbContext>();
                 services.AddScoped<IRepository<Store>, StoreRepository>();
                 services.AddScoped<IRepository<Product>, ProductRepository>();
+
+                services.AddScoped<IStoreRepository, StoreRepository>();
+                services.AddScoped<IProductRepository, ProductRepository>();
                 services.AddScoped<IInventoryRepository, InventoryRepository>();
 
                 // Configure services
@@ -77,6 +85,8 @@ namespace ArticleCatalog
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+            
             app.UseHttpsRedirection();
             app.UseRouting();
 

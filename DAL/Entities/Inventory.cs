@@ -4,7 +4,7 @@ namespace DAL.Entities;
 
 public class Inventory : IEntity<int>
 {
-    public int Id { get; }
+    public int Id { get; set;  }
     public string StoreId { get; set; } = null!;
 
     public int ProductId { get; set; }
