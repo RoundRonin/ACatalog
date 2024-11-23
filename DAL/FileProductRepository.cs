@@ -1,91 +1,85 @@
-﻿using System.Collections.Generic;
+﻿using DAL.Entities;
+using DAL.Infrastructure;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using DAL.Entities;
-using DAL.Infrastructure;
 
 namespace DAL;
 
-public class FileProductRepository(string filePath) : IRepository<Product>
+public class FileProductRepository : IProductRepository
 {
-    private readonly string _filePath = filePath;
+    private readonly string _productFilePath;
+
+    public FileProductRepository(string productFilePath)
+    {
+        _productFilePath = productFilePath;
+    }
 
     public async Task AddAsync(Product entity)
     {
-        var lines = entity.Inventories.Select(inventory =>
-            $"{entity.Name},{inventory.StoreId},{inventory.Quantity},{inventory.Price}");
-        await FileHelper.WriteLinesAsync(_filePath, lines, append: true);
+        var products = await GetAllProducts();
+        if (products.Any(p => p.Id == entity.Id))
+        {
+            // Skip adding as the product already exists globally
+            return;
+        }
+
+        await File.AppendAllLinesAsync(_productFilePath, new[] { $"{entity.Id}" });
     }
 
     public async Task AddOrUpdateAsync(Product entity)
     {
-        var products = await GetAllAsync();
-        var productList = products.ToList();
-
-        // Remove existing records with the same product name and store ID
-        foreach (var inventory in entity.Inventories)
+        // If the product exists, no need to add it again
+        if (!await ProductExistsAsync(entity.Id))
         {
-            productList.RemoveAll(p => p.Name == entity.Name && p.Inventories.Any(i => i.StoreId == inventory.StoreId));
+            await AddAsync(entity);
         }
-
-        productList.Add(entity);
-
-        var lines = new List<string>();
-        foreach (var product in productList)
-        {
-            lines.AddRange(product.Inventories.Select(inventory =>
-                $"{product.Name},{inventory.StoreId},{inventory.Quantity},{inventory.Price}"));
-        }
-        await FileHelper.WriteLinesAsync(_filePath, lines, append: false);
     }
 
     public async Task UpdateAsync(Product entity)
     {
+        // Updating a product doesn't make sense here, just ensuring its presence
         await AddOrUpdateAsync(entity);
     }
 
     public async Task<Product> GetByIdAsync(int id)
     {
-        // ID simulation
-        var products = await GetAllAsync();
-        return products.FirstOrDefault(p => p.Id == id);
+        var products = await GetAllProducts();
+
+        // Assuming 'id' corresponds to an index for simplicity
+        return products.ElementAtOrDefault(id);
     }
 
-    public async Task<IEnumerable<Product>> GetAllAsync(System.Linq.Expressions.Expression<Func<Product, bool>> predicate = null)
+    public async Task<Product?> GetByIdAsync(string productId)
     {
-        var lines = await FileHelper.ReadLinesAsync(_filePath);
-        var products = new Dictionary<(string, string), Product>();
+        var products = await GetAllAsync();
+        return products.FirstOrDefault(p => p.Id == productId);
+    }
 
-        foreach (var line in lines)
+    public async Task<IEnumerable<Product>> GetAllAsync(Expression<Func<Product, bool>>? predicate = null)
+    {
+        var products = await GetAllProducts();
+
+        if (predicate != null)
         {
-            var parts = line.Split(',');
-            var productName = parts[0];
-            var storeId = parts[1];
-            var quantity = int.Parse(parts[2]);
-            var price = decimal.Parse(parts[3]);
-
-            var key = (productName, storeId);
-
-            if (!products.ContainsKey(key))
-            {
-                products[key] = new Product
-                {
-                    Name = productName,
-                    Inventories = new List<Inventory>()
-                };
-            }
-
-            products[key].Inventories.Add(new Inventory
-            {
-                StoreId = storeId,
-                Quantity = quantity,
-                Price = price,
-                Product = products[key]
-            });
+            return products.AsQueryable().Where(predicate).ToList();
         }
 
-        var result = products.Values.AsEnumerable();
-        return predicate == null ? result : result.Where(predicate.Compile());
+        return products;
     }
+
+    public async Task<bool> ProductExistsAsync(string productName)
+    {
+        var products = await GetAllProducts();
+        return products.Any(p => p.Id == productName);
+    }
+
+    private async Task<IEnumerable<Product>> GetAllProducts()
+    {
+        var lines = await File.ReadAllLinesAsync(_productFilePath);
+        return lines.Select(line => new Product { Id = line }).ToList();
+    }
+
 }

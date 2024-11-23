@@ -5,5 +5,5 @@ namespace DAL.Infrastructure;
 
 public interface IStoreRepository : IRepository<Store>
 {
-    Task<Store> GetByIdAsync(string storeId);
+    Task<Store?> GetByIdAsync(string storeId);
 }

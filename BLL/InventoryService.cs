@@ -22,8 +22,8 @@ public class InventoryService : IInventoryService
     {
         var inventory = new Inventory
         {
-            ProductId = inventoryDto.ProductId,
-            StoreId = inventoryDto.StoreId,
+            ProductId = inventoryDto.ProductName,
+            StoreId = inventoryDto.StoreCode,
             Price = inventoryDto.Price,
             Quantity = inventoryDto.Quantity
         };
@@ -31,9 +31,9 @@ public class InventoryService : IInventoryService
         await _inventoryRepository.AddOrUpdateAsync(inventory);
     }
 
-    public async Task<StoreDTO?> FindCheapestStoreAsync(int productId)
+    public async Task<StoreDTO?> FindCheapestStoreAsync(string productName)
     {
-        var inventory = await _inventoryRepository.GetAllAsync(i => i.ProductId == productId);
+        var inventory = await _inventoryRepository.GetAllAsync(i => i.ProductId == productName);
         var cheapestInventory = inventory.OrderBy(i => i.Price).FirstOrDefault();
 
         if (cheapestInventory == null)
@@ -67,8 +67,7 @@ public class InventoryService : IInventoryService
 
             affordebleProducts.Add(new StoreInventoryDTO
             {
-                ProductName = item.ProductName,
-                ProductId = item.ProductId,
+                ProductName = item.ProductId,
                 Price = item.Price,
                 Quantity = item.Quantity
             });
@@ -79,18 +78,18 @@ public class InventoryService : IInventoryService
 
     public async Task<PurchaseResultDTO> BuyGoodsAsync(PurchaseRequestDTO purchaseRequest)
     {
-        var inventoryList = await _inventoryRepository.GetAllAsync(i => i.StoreId == purchaseRequest.StoreId);
+        var inventoryList = await _inventoryRepository.GetAllAsync(i => i.StoreId == purchaseRequest.StoreCode);
         var totalCost = 0M;
 
         foreach (var product in purchaseRequest.Products)
         {
-            var inventory = inventoryList.FirstOrDefault(i => i.ProductId == product.ProductId);
+            var inventory = inventoryList.FirstOrDefault(i => i.ProductId == product.ProductName);
             if (inventory == null || inventory.Quantity < product.Quantity)
             {
                 return new PurchaseResultDTO 
                 {
                     IsSuccess = false,
-                    Message = $"Not enough quantity for product ID {product.ProductId}." 
+                    Message = $"Not enough quantity for product ID {product.ProductName}." 
                 };
             }
 
@@ -108,7 +107,7 @@ public class InventoryService : IInventoryService
 
         foreach (var product in batchRequest.Products)
         {
-            var inventory = await _inventoryRepository.GetAllAsync(i => i.ProductId == product.ProductId);
+            var inventory = await _inventoryRepository.GetAllAsync(i => i.ProductId == product.ProductName);
             foreach (var item in inventory)
             {
                 if (item.Quantity >= product.Quantity)

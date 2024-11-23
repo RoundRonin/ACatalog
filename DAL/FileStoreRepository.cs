@@ -44,7 +44,7 @@ public class FileStoreRepository(string filePath) : IRepository<Store>
         return stores.FirstOrDefault(s => s.Id == id.ToString());
     }
 
-    public async Task<IEnumerable<Store>> GetAllAsync(System.Linq.Expressions.Expression<Func<Store, bool>> predicate = null)
+    public async Task<IEnumerable<Store>> GetAllAsync(System.Linq.Expressions.Expression<Func<Store, bool>>? predicate = null)
     {
         var lines = await FileHelper.ReadLinesAsync(_filePath);
         var stores = lines.Select(line =>
@@ -60,7 +60,7 @@ public class FileStoreRepository(string filePath) : IRepository<Store>
         return predicate == null ? stores : stores.Where(predicate.Compile());
     }
 
-    public async Task<Store> GetByIdAsync(string storeId)
+    public async Task<Store?> GetByIdAsync(string storeId)
     {
         var stores = await GetAllAsync();
         return stores.FirstOrDefault(s => s.Id == storeId);

@@ -2,19 +2,15 @@
 using BLL.Infrastructure;
 using BLL.DTOs;
 using ArticleCatalog.ViewModels;
+using System.ComponentModel.DataAnnotations;
 
 namespace ArticleCatalog.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductController : ControllerBase
+    public class ProductController(IProductService productService) : ControllerBase
     {
-        private readonly IProductService _productService;
-
-        public ProductController(IProductService productService)
-        {
-            _productService = productService;
-        }
+        private readonly IProductService _productService = productService;
 
         // 2. Create a product
         [HttpPost]
@@ -30,26 +26,23 @@ namespace ArticleCatalog.Controllers
             };
 
             await _productService.CreateProductAsync(productDto);
-            return CreatedAtAction(nameof(GetProductById), new { id = productDto.Id }, productDto);
+            return CreatedAtAction(nameof(GetProductByName), new { name = productDto.Name }, productDto);
         }
 
-        // Get a product by ID
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetProductById(int id)
+        // Get a product by Name 
+        [HttpGet("{name}")]
+        public async Task<IActionResult> GetProductByName(
+            [RegularExpression("^[A-Za-z0-9-]+$", ErrorMessage = "Invalid Name format"), MaxLength(36)]string name)
         {
-            // Validation
-            if (id <= 0) { return BadRequest("Invalid product ID."); }
-
-            var productDto = await _productService.GetProductByIdAsync(id);
+            var productDto = await _productService.GetProductByNameAsync(name);
             if (productDto == null)
             {
-                return NotFound($"Product with ID {id} not found.");
+                return NotFound($"Product with ID {name} not found.");
             }
 
             // Translate BLL DTO to presentation layer ViewModel
             var productViewModel = new ProductViewModel
             {
-                Id = productDto.Id,
                 Name = productDto.Name
             };
 

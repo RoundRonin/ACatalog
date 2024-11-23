@@ -5,5 +5,5 @@ namespace BLL.Infrastructure;
 public interface IStoreService
 {
     Task<StoreDTO> CreateStoreAsync(StoreDTO storeDto);
-    Task<StoreDTO> GetStoreByIdAsync(string id);
+    Task<StoreDTO?> GetStoreByCodeAsync(string code);
 }

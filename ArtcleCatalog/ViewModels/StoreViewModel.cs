@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ArticleCatalog.ViewModels;
 
-public class StoreViewModel : IIndexedModel 
+public class StoreViewModel 
 {
     [Required(ErrorMessage = "Code is required.")] 
     [MaxLength(10, ErrorMessage = "Code cannot exceed 10 characters.")]

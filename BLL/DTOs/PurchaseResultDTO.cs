@@ -9,6 +9,6 @@
         public decimal TotalCost { get; set; }
 
         // Message providing additional information about the purchase result.
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 }

@@ -5,4 +5,5 @@ namespace DAL.Infrastructure;
 
 public interface IProductRepository : IRepository<Product>
 {
+    Task<Product?> GetByIdAsync(string productId);
 }

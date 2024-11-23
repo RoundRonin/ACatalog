@@ -10,9 +10,9 @@ namespace BLL;
 
 public class ProductService : IProductService
 {
-    private readonly IRepository<Product> _productRepository;
+    private readonly IProductRepository _productRepository;
 
-    public ProductService(IRepository<Product> productRepository)
+    public ProductService(IProductRepository productRepository)
     {
         _productRepository = productRepository;
     }
@@ -21,8 +21,7 @@ public class ProductService : IProductService
     {
         var product = new Product
         {
-            Id = productDto.Id,
-            Name = productDto.Name
+            Id = productDto.Name
         };
 
         try
@@ -38,9 +37,9 @@ public class ProductService : IProductService
         return productDto;
     }
 
-    public async Task<ProductDTO> GetProductByIdAsync(int id)
+    public async Task<ProductDTO> GetProductByNameAsync(string productName)
     {
-        var product = await _productRepository.GetByIdAsync(id);
+        var product = await _productRepository.GetByIdAsync(productName);
         if (product == null)
         {
             return null;
@@ -48,8 +47,7 @@ public class ProductService : IProductService
 
         return new ProductDTO
         {
-            Id = product.Id,
-            Name = product.Name
+            Name = product.Id
         };
     }
 }

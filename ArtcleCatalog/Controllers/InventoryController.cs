@@ -6,19 +6,15 @@ using ArticleCatalog.ViewModels.BatchQuantity;
 using ArticleCatalog.ViewModels.BatchPricing;
 using System.Collections.Generic; 
 using System.Linq;
+using System.ComponentModel.DataAnnotations;
 
 namespace ArticleCatalog.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class InventoryController : ControllerBase
+    public class InventoryController(IInventoryService inventoryService) : ControllerBase
     {
-        private readonly IInventoryService _inventoryService;
-
-        public InventoryController(IInventoryService inventoryService)
-        {
-            _inventoryService = inventoryService;
-        }
+        private readonly IInventoryService _inventoryService = inventoryService;
 
         // 3. Deliver a batch of goods to the store
         [HttpPost("deliver")]
@@ -29,8 +25,8 @@ namespace ArticleCatalog.Controllers
 
             var inventoryDtos = inventoryBatch.Products.Select(product => new InventoryDTO
             {
-                ProductId = product.ProductId,
-                StoreId = inventoryBatch.StoreId,
+                ProductName = product.ProductName,
+                StoreCode = inventoryBatch.StoreCode,
                 Price = product.Price,
                 Quantity = product.Quantity
             }).ToList();
@@ -43,16 +39,14 @@ namespace ArticleCatalog.Controllers
         }
 
         // 4. Find a store where a certain product is the cheapest
-        [HttpGet("cheapest/{productId}")]
-        public async Task<IActionResult> FindCheapestStore(int productId)
+        [HttpGet("cheapest/{productName}")]
+        public async Task<IActionResult> FindCheapestStore(
+            [RegularExpression("^[A-Za-z0-9-]+$", ErrorMessage = "Invalid Name format"), MaxLength(36)]string productName)
         {
-            // Validation
-            if (productId <= 0) { return BadRequest("Invalid product ID."); }
-
-            var storeDto = await _inventoryService.FindCheapestStoreAsync(productId);
+            var storeDto = await _inventoryService.FindCheapestStoreAsync(productName);
             if (storeDto == null)
             {
-                return NotFound($"Store with the cheapest product ID {productId} not found.");
+                return NotFound($"Store with the cheapest product ID {productName} not found.");
             }
 
             var storeViewModel = new StoreViewModel
@@ -66,17 +60,16 @@ namespace ArticleCatalog.Controllers
         }
         
         // 5. Understand which goods can be bought in the store for a certain amount
-        [HttpGet("affordable/{storeId}/{amount}")] 
-        public async Task<IActionResult> GetAffordableGoods(string storeId, decimal amount) 
+        [HttpGet("affordable/{storeCode}/{amount}")] 
+        public async Task<IActionResult> GetAffordableGoods(string storeCode, decimal amount) 
         {
             // Validation
-            if (storeId == null) { return BadRequest("Invalid store ID."); } 
+            if (storeCode == null) { return BadRequest("Invalid store ID."); } 
             if (amount <= 0) { return BadRequest("Amount must be greater than 0."); } 
             
-            var affordableGoods = await _inventoryService.GetAffordableGoodsAsync(storeId, amount);
+            var affordableGoods = await _inventoryService.GetAffordableGoodsAsync(storeCode, amount);
             var products = affordableGoods.Select(item => new StoreInventoryViewModel 
             {
-                ProductId = item.ProductId,
                 ProductName = item.ProductName,
                 Price = item.Price,
                 Quantity = item.Quantity
@@ -94,10 +87,10 @@ namespace ArticleCatalog.Controllers
 
             var purchaseRequestDto = new PurchaseRequestDTO
             {
-                StoreId = purchase.StoreId,
+                StoreCode = purchase.StoreCode,
                 Products = purchase.Products.Select(x => new ProductQuantityDTO
                 {
-                    ProductId = x.ProductId,
+                    ProductName = x.ProductName,
                     Quantity = x.Quantity
                 }).ToList()
             };
@@ -117,7 +110,7 @@ namespace ArticleCatalog.Controllers
             {
                 Products = batch.Products.Select(x => new ProductQuantityDTO
                 {
-                    ProductId = x.ProductId,
+                    ProductName = x.ProductName,
                     Quantity = x.Quantity
                 }).ToList()
             };

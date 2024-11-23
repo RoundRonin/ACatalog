@@ -41,12 +41,12 @@ public class StoreService : IStoreService
 
         return storeDto;
     }
-    public async Task<StoreDTO> GetStoreByIdAsync(string id)
+    public async Task<StoreDTO?> GetStoreByCodeAsync(string code)
     {
-        var store = await _storeRepository.GetByIdAsync(id);
+        var store = await _storeRepository.GetByIdAsync(code);
         if (store == null)
         {
-            _logger.LogWarning($"Store with ID {id} not found.");
+            _logger.LogWarning($"Store with Code {code} not found.");
             return null;
         }
 

@@ -7,4 +7,8 @@ namespace DAL;
 
 public class ProductRepository(DbContext context) : EfRepository<Product>(context), IProductRepository
 {
+    public async Task<Product?> GetByIdAsync(string storeId)
+    {
+        return await _context.Set<Product>().FindAsync(storeId);
+    }
 }

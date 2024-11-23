@@ -4,12 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entities;
 
-public class Product : IEntity<int>
+public class Product : IEntity<String>
 {
     [Key] 
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
-    public required string Name { get; set; }
+    public required string Id { get; set; }
 
     public ICollection<Inventory> Inventories { get; set; } = [];
 }

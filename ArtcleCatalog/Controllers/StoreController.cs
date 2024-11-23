@@ -8,14 +8,9 @@ namespace ArticleCatalog.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class StoreController : ControllerBase
+    public class StoreController(IStoreService storeService) : ControllerBase
     {
-        private readonly IStoreService _storeService;
-
-        public StoreController(IStoreService storeService)
-        {
-            _storeService = storeService;
-        }
+        private readonly IStoreService _storeService = storeService;
 
         // 1. Create a store
         [HttpPost]
@@ -33,18 +28,18 @@ namespace ArticleCatalog.Controllers
             };
 
             await _storeService.CreateStoreAsync(storeDto);
-            return CreatedAtAction(nameof(GetStoreById), new { id = storeDto.Code }, storeDto);
+            return CreatedAtAction(nameof(GetStoreById), new { code = storeDto.Code }, storeDto);
         }
 
-        // Get a store by ID
-        [HttpGet("{id}")]
+        // Get a store by Code 
+        [HttpGet("{code}")]
         public async Task<IActionResult> GetStoreById(
-            [RegularExpression("^[A-Za-z0-9-]+$", ErrorMessage = "Invalid ID format"), MaxLength(36)] string id)
+            [RegularExpression("^[A-Za-z0-9-]+$", ErrorMessage = "Invalid Code format"), MaxLength(36)] string code)
         {
-            var storeDto = await _storeService.GetStoreByIdAsync(id);
+            var storeDto = await _storeService.GetStoreByCodeAsync(code);
             if (storeDto == null)
             {
-                return NotFound($"Store with ID {id} not found.");
+                return NotFound($"Store with ID {code} not found.");
             }
 
             // Translate BLL DTO to presentation layer ViewModel

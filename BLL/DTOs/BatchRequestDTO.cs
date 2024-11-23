@@ -2,5 +2,5 @@
 
 public class BatchRequestDTO
 { 
-    public List<ProductQuantityDTO> Products { get; set; }
+    public required List<ProductQuantityDTO> Products { get; set; }
 }

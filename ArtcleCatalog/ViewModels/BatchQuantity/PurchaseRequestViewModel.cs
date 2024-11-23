@@ -7,7 +7,7 @@ namespace ArticleCatalog.ViewModels.BatchQuantity;
 public class PurchaseRequestViewModel : AbstractEnumerableValidatedViewModel<ProductQuantityViewModel>
 {
     [Required(ErrorMessage = "Store ID is required.")]
-    public string StoreId { get; set; }
+    public string StoreCode { get; set; }
 
     public PurchaseRequestViewModel()
     {

@@ -17,7 +17,6 @@ public class InventoryRepository(DbContext context) : EfRepository<Inventory>(co
             .Where(predicate)
             .Select(i => new StoreInventory
             {
-                ProductName = _context.Set<Product>().FirstOrDefault(p => p.Id == i.ProductId).Name,
                 ProductId = i.ProductId,
                 Quantity = i.Quantity,
                 Price = i.Price

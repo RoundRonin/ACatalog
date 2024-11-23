@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ArticleCatalog.ViewModels;
 
-public class ProductViewModel : IIndexedModel
+public class ProductViewModel
 {
     [Required(ErrorMessage = "Name is required.")]
     [MaxLength(50, ErrorMessage = "Name cannot exceed 50 characters.")]

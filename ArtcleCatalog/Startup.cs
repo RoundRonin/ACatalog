@@ -61,10 +61,13 @@ namespace ArticleCatalog
                 var storeFilePath = Configuration.GetValue<string>("StoreFilePath");
                 var productFilePath = Configuration.GetValue<string>("ProductFilePath");
 
+                if (storeFilePath == null || productFilePath == null) throw new Exception("Configuration file is not set");
+
                 // Configure file-based repositories
+                var fileProdRep = new FileProductRepository(productFilePath);
                 services.AddScoped<IRepository<Store>>(sp => new FileStoreRepository(storeFilePath));
-                services.AddScoped<IRepository<Product>>(sp => new FileProductRepository(productFilePath));
-                services.AddScoped<IInventoryRepository>(sp => new FileInventoryRepository(productFilePath));
+                services.AddScoped<IRepository<Product>>(sp => fileProdRep);
+                services.AddScoped<IInventoryRepository>(sp => new FileInventoryRepository(productFilePath, fileProdRep));
             }
             else
             {
