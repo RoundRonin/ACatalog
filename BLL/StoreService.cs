@@ -18,7 +18,7 @@ public class StoreService : IStoreService
         _logger = logger;
     }
 
-    public async Task CreateStoreAsync(StoreDTO storeDto)
+    public async Task<StoreDTO> CreateStoreAsync(StoreDTO storeDto)
     {
         var store = new Store
         {
@@ -28,6 +28,7 @@ public class StoreService : IStoreService
         };
 
         await _storeRepository.AddAsync(store);
+        return storeDto;
     }
     public async Task<StoreDTO> GetStoreByIdAsync(int id)
     {
@@ -40,8 +41,7 @@ public class StoreService : IStoreService
 
         return new StoreDTO
         {
-            Id = store.Id,
-            Code = store.Code,
+            Code = store.Id,
             Name = store.Name,
             Address = store.Address
         };

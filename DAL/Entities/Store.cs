@@ -8,5 +8,5 @@ public class Store : IEntity<string>
     public string Name { get; set; } = null!;
     public string Address { get; set; } = null!;
     
-    public ICollection<Inventory> Products { get; set; } = [];
+    public ICollection<Inventory> Inventories { get; set; } = [];
 }

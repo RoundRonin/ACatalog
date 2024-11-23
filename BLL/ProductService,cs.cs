@@ -15,7 +15,7 @@ public class ProductService : IProductService
         _productRepository = productRepository;
     }
 
-    public async Task CreateProductAsync(ProductDTO productDto)
+    public async Task<ProductDTO> CreateProductAsync(ProductDTO productDto)
     {
         var product = new Product
         {
@@ -24,6 +24,7 @@ public class ProductService : IProductService
         };
 
         await _productRepository.AddAsync(product);
+        return productDto;
     }
 
     public async Task<ProductDTO> GetProductByIdAsync(int id)

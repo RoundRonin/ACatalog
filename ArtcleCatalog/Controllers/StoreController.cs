@@ -32,7 +32,7 @@ namespace ArticleCatalog.Controllers
             };
 
             await _storeService.CreateStoreAsync(storeDto);
-            return CreatedAtAction(nameof(GetStoreById), new { id = storeDto.Id }, storeDto);
+            return CreatedAtAction(nameof(GetStoreById), new { id = storeDto.Code }, storeDto);
         }
 
         // Get a store by ID
@@ -51,7 +51,6 @@ namespace ArticleCatalog.Controllers
             // Translate BLL DTO to presentation layer ViewModel
             var storeViewModel = new StoreViewModel
             {
-                Id = storeDto.Id,
                 Code = storeDto.Code,
                 Name = storeDto.Name,
                 Address = storeDto.Address
