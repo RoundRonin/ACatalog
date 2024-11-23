@@ -1,32 +1,28 @@
 ﻿using DAL.Entities;
+using System.Linq.Expressions;
 
 namespace DAL.Infrastructure;
 
-public interface IStoreRepository
+public interface IRepository<T> where T : class
 {
-    Task CreateStoreAsync(Store store);
-    Task<Store> GetStoreByCodeAsync(string code);
-    Task<IEnumerable<Store>> GetAllStoresAsync();
-    Task UpdateStoreAsync(Store store);
-    Task DeleteStoreAsync(string code);
+    Task AddAsync(T entity);
+    Task AddOrUpdateAsync(T entity);
+    Task UpdateAsync(T entity);
+    Task<T> GetByIdAsync(int id);
+    Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null);
 }
 
-public interface IProductRepository
+public interface IStoreRepository : IRepository<Store>
 {
-    Task CreateProductAsync(Product product);
-    Task<Product> GetProductByNameAsync(string name);
-    Task<IEnumerable<Product>> GetAllProductsAsync();
-    Task UpdateProductAsync(Product product);
-    Task DeleteProductAsync(string name);
+    Task<Store> GetByIdAsync(string storeId);
 }
 
-public interface IStoreProductRepository
+public interface IProductRepository : IRepository<Product>
 {
-    Task AddStoreProductAsync(StoreProduct storeProduct);
-    Task<IEnumerable<StoreProduct>> GetProductsByStoreAsync(string storeCode);
-    Task<IEnumerable<StoreProduct>> GetStoresByProductAsync(string productName);
-    Task<StoreProduct> GetStoreProductAsync(string storeCode, string productName);
-    Task UpdateStoreProductAsync(StoreProduct storeProduct);
-    Task DeleteStoreProductAsync(int id);
+}
+
+public interface IInventoryRepository : IRepository<Inventory>
+{
+    Task<IEnumerable<Object>> GetAllProductsInAStore(Expression<Func<Inventory, bool>> predicate);
 }
 

@@ -57,7 +57,6 @@ namespace ArticleCatalog.Controllers
 
             var storeViewModel = new StoreViewModel
             {
-                Id = storeDto.Id,
                 Code = storeDto.Code,
                 Name = storeDto.Name,
                 Address = storeDto.Address
@@ -131,7 +130,6 @@ namespace ArticleCatalog.Controllers
 
             var storeViewModel = new StoreViewModel
             {
-                Id = storeDto.Id,
                 Code = storeDto.Code,
                 Name = storeDto.Name,
                 Address = storeDto.Address

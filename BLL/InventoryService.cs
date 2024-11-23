@@ -1,18 +1,19 @@
 ﻿using BLL.DTOs;
 using BLL.Infrastructure;
 using DAL.Entities;
+using DAL.Infrastructure;
 
 namespace BLL.Services
 {
     public class InventoryService : IInventoryService
     {
         private readonly IRepository<Inventory> _inventoryRepository;
-        private readonly IRepository<Store> _storeRepository;
+        private readonly IStoreRepository _storeRepository;
         private readonly IRepository<Product> _productRepository;
 
         public InventoryService(
             IRepository<Inventory> inventoryRepository,
-            IRepository<Store> storeRepository,
+            IStoreRepository storeRepository,
             IRepository<Product> productRepository)
         {
             _inventoryRepository = inventoryRepository;
@@ -33,7 +34,7 @@ namespace BLL.Services
             await _inventoryRepository.AddOrUpdateAsync(inventory);
         }
 
-        public async Task<StoreDTO> FindCheapestStoreAsync(int productId)
+        public async Task<StoreDTO?> FindCheapestStoreAsync(int productId)
         {
             var inventory = await _inventoryRepository.GetAllAsync(i => i.ProductId == productId);
             var cheapestInventory = inventory.OrderBy(i => i.Price).FirstOrDefault();
@@ -47,8 +48,7 @@ namespace BLL.Services
 
             return new StoreDTO
             {
-                Id = store.Id,
-                Code = store.Code,
+                Code = store.Id,
                 Name = store.Name,
                 Address = store.Address
             };
@@ -99,9 +99,9 @@ namespace BLL.Services
             return new PurchaseResultDTO { IsSuccess = true, TotalCost = totalCost };
         }
 
-        public async Task<StoreDTO> FindCheapestBatchStoreAsync(BatchRequestDTO batchRequest)
+        public async Task<StoreDTO?> FindCheapestBatchStoreAsync(BatchRequestDTO batchRequest)
         {
-            var storeTotalCosts = new Dictionary<int, decimal>();
+            var storeTotalCosts = new Dictionary<string, decimal>();
 
             foreach (var product in batchRequest.Products)
             {
@@ -121,7 +121,7 @@ namespace BLL.Services
 
             var cheapestStore = storeTotalCosts.OrderBy(kvp => kvp.Value).FirstOrDefault();
 
-            if (cheapestStore.Key == 0)
+            if (cheapestStore.Key == null)
             {
                 return null;
             }
@@ -130,8 +130,7 @@ namespace BLL.Services
 
             return new StoreDTO
             {
-                Id = store.Id,
-                Code = store.Code,
+                Code = store.Id,
                 Name = store.Name,
                 Address = store.Address
             };

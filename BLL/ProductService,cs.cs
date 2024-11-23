@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using BLL.DTOs;
 using BLL.Infrastructure;
-using DAL;
+using DAL.Infrastructure;
 using DAL.Entities;
 
 namespace BLL;
