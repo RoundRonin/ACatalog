@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BLL;
 using BLL.DTOs;
-using ArtcleCatalog.ViewModels;
-using ArtcleCatalog.ViewModels.BatchQuantity;
-using ArtcleCatalog.ViewModels.BatchPricing;
+using ArticleCatalog.ViewModels;
+using ArticleCatalog.ViewModels.BatchQuantity;
+using ArticleCatalog.ViewModels.BatchPricing;
 
-namespace ArtcleCatalog.Controllers;
+namespace ArticleCatalog.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

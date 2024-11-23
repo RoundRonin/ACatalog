@@ -2,7 +2,7 @@
 
 namespace DAL.Entities;
 
-public class StoreProduct : IEntity<Guid>
+public class Inventory : IEntity<Guid>
 {
     public Guid Id { get; }
     public string StoreId { get; set; } = null!;

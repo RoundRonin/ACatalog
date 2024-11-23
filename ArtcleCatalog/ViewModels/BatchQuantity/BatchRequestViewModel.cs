@@ -1,6 +1,6 @@
-﻿using ArtcleCatalog.ViewModels.BatchQuantity;
+﻿using ArticleCatalog.ViewModels.BatchQuantity;
 
-namespace ArtcleCatalog.ViewModels;
+namespace ArticleCatalog.ViewModels;
 
 public class BatchRequestViewModel
 {

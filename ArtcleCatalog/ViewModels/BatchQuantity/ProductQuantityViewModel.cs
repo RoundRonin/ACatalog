@@ -1,6 +1,6 @@
-﻿using ArtcleCatalog.Infrastracture;
+﻿using ArticleCatalog.Infrastracture;
 
-namespace ArtcleCatalog.ViewModels.BatchQuantity;
+namespace ArticleCatalog.ViewModels.BatchQuantity;
 
 public class ProductQuantityViewModel
 {

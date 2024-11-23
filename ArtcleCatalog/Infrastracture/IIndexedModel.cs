@@ -1,4 +1,4 @@
-﻿namespace ArtcleCatalog.Infrastracture
+﻿namespace ArticleCatalog.Infrastracture
 {
     public class IIndexedModel
     {

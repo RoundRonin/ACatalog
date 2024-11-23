@@ -1,6 +1,6 @@
-﻿using ArtcleCatalog.Infrastracture;
+﻿using ArticleCatalog.Infrastracture;
 
-namespace ArtcleCatalog.ViewModels;
+namespace ArticleCatalog.ViewModels;
 
 public class StoreViewModel : IIndexedModel 
 {

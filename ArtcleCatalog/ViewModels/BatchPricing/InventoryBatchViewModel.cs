@@ -1,4 +1,4 @@
-﻿namespace ArtcleCatalog.ViewModels.BatchPricing;
+﻿namespace ArticleCatalog.ViewModels.BatchPricing;
 
 public class InventoryBatchViewModel
 {
