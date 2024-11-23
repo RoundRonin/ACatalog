@@ -365,3 +365,6 @@ FodyWeavers.xsd
 .vscode
 */files/*
 files/*
+
+DAL/Migrations
+DAL/Migrations/*
