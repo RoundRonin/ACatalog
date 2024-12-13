@@ -24,8 +24,8 @@ Docker for PostgreSQL database (if using the database repository)
 
 ### Clone the repository:
 ```sh
-git clone https://github.com/RoundRonin/ArtcleCatalog.git
-cd ArticleCatalog
+git clone https://github.com/RoundRonin/ACatalog.git
+cd ACatalog
 ```
 
 ### Install Dependencies:
@@ -55,8 +55,8 @@ docker-compose down
 Run Migrations:
 ```sh
 cd DAL
-dotnet ef migrations add InitialCreate --startup-project ..\ArtcleCatalog\
-dotnet ef database update --startup-project ..\ArtcleCatalog\
+dotnet ef migrations add InitialCreate --startup-project ..\ACatalog\
+dotnet ef database update --startup-project ..\ACatalog\
 ```
 ### Additional configuration
 Configure File Paths: Update appsettings.json:
